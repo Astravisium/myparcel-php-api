@@ -5,6 +5,7 @@ namespace Mvdnbrk\MyParcel\Endpoints;
 use Illuminate\Support\Collection;
 use Mvdnbrk\MyParcel\Exceptions\InvalidHousenumberException;
 use Mvdnbrk\MyParcel\Exceptions\InvalidPostalCodeException;
+use Mvdnbrk\MyParcel\Resources\Delivery\DeliveryPoint;
 use Mvdnbrk\MyParcel\Resources\ServicePoint as ServicePointResource;
 use Mvdnbrk\MyParcel\Resources\Time;
 use Mvdnbrk\MyParcel\Support\Str;
@@ -39,7 +40,7 @@ class ServicePoints extends BaseEndpoint
         $this->cutoffTime = new Time('15:30');
     }
 
-    public function get(array $filters = []): Collection
+    public function get(array $filters = [], $type = 'delivery'): Collection
     {
         $response = $this->performApiCall(
             'GET',
@@ -48,9 +49,16 @@ class ServicePoints extends BaseEndpoint
 
         $collection = new Collection();
 
-        collect($response->data->pickup)->each(function ($item) use ($collection) {
-            $collection->push(new ServicePointResource($item));
-        });
+        if ($type === 'delivery') {
+            collect($response->data->delivery)->each(function ($item) use ($collection) {
+                $collection->push(new DeliveryPoint($item));
+            });
+        }
+        else {
+            collect($response->data->pickup)->each(function ($item) use ($collection) {
+                $collection->push(new ServicePointResource($item));
+            });
+        }
 
         return $collection;
     }

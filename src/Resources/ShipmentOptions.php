@@ -34,6 +34,9 @@ class ShipmentOptions extends BaseResource
     /** @var bool */
     public $signature;
 
+    /** @var array */
+    public $physical_properties;
+
     public function __construct(array $attributes = [])
     {
         $this->setDefaultOptions();
@@ -62,6 +65,16 @@ class ShipmentOptions extends BaseResource
     public function setDescriptionAttribute(string $value): void
     {
         $this->label_description = $value;
+    }
+
+    public function setPhysicalPropertiesAttribute(array $value): void
+    {
+        $this->physical_properties = [
+            'weight' => $value['weight'],
+            'height' => $value['height'],
+            'width' => $value['width'],
+            'length' => $value['length'],
+        ];
     }
 
     public function toArray(): array
